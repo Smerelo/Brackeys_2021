@@ -43,6 +43,14 @@ public class ConductorController : MonoBehaviour
         }
     }
 
+    public void HideTicketUI()
+    {
+        mask.SetActive(false);
+        IsBusy = false;
+        canCheckTicket = true;
+        promtText.gameObject.SetActive(true);
+    }
+
     internal void EnableDoorInteraction()
     {
         canCheckTicket = true;

@@ -21,10 +21,6 @@ public class AudioManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Play();
-        }
     }
 
     public void Play()
