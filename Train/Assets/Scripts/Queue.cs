@@ -9,11 +9,13 @@ public class Queue : MonoBehaviour
     public GameObject watingZone;
     public GameObject passengerPrefab;
     public GameObject window;
+    public GameObject awayPoint;
+    public float restlessTimerEnd;
+
     private List<Passenger> passengers;
     private Passenger passengerInWindow;
     private float spawnTimer;
     private float spawnTime = 0.2f;
-    public float restlessTimerEnd;
     private float restlessTimer = 0;
     private float checkTimer;
     private float maxCheckTimer = 10;
@@ -67,23 +69,11 @@ public class Queue : MonoBehaviour
             int i = passengersAreRestless ? UnityEngine.Random.Range(0, 2) : UnityEngine.Random.Range(0, 5);
             if (passengersAreRestless && i == 1)
             {
-                windowIsOccupied = true;
-                int r = UnityEngine.Random.Range(1, 5);
-                passengerInWindow = passengers[r];
-                passengerInWindow.GoToWindow(window);
-                passengers.Remove(passengerInWindow);
-                MovePassengers(r);
-                restlessTimer = 0;
+                SelectRandomPassenger();
             }
-            else if (i > 2)
+            else if (!passengersAreRestless && i > 3)
             {
-                windowIsOccupied = true;
-                int r = UnityEngine.Random.Range(1, 5);
-                passengerInWindow = passengers[r];
-                passengerInWindow.GoToWindow(window);
-                passengers.Remove(passengerInWindow);
-                MovePassengers(r);
-                restlessTimer = 0;
+                SelectRandomPassenger();
             }
             else
             {
@@ -92,8 +82,28 @@ public class Queue : MonoBehaviour
         }
     }
 
+    private void SelectRandomPassenger() 
+    {
+        windowIsOccupied = true;
+        int r = UnityEngine.Random.Range(1, 5);
+        passengerInWindow = passengers[r];
+        passengerInWindow.GoToWindow(window);
+        passengers.Remove(passengerInWindow);
+        MovePassengers(r);
+        restlessTimer = 0;
+    }
+
+    internal void RemovePassengerInWindow()
+    {
+        passengerInWindow.GoOffScreen(awayPoint.transform.position);
+        passengerInWindow = null;
+        windowIsOccupied = false;
+        checkTimer = 0;
+    }
+
     private void MovePassengers(int i)
     {
+        while(i < passengers.Count)
         {
             passengers[i].positionInLine = i;
             passengers[i].Move();

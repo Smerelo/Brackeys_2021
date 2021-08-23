@@ -14,6 +14,7 @@ public class ConductorController : MonoBehaviour
     public bool IsInsideDoor { get; set; }
     private bool IsBusy { get; set; }
     public bool IsMashing { get; private set; }
+    private Queue queue;
 
     private Slider slider;
     void Start()
@@ -29,13 +30,24 @@ public class ConductorController : MonoBehaviour
         }
     }
 
-    internal void StartWindowMiniGame(Vector3 position)
+    internal void StartWindowMiniGame(Vector3 position, Queue tempQueue)
     {
         IsBusy = true;
         transform.position = new Vector3(position.x, transform.position.y, transform.position.z);
         progressBar.SetActive(true);
+        promtText.gameObject.SetActive(true);
         IsMashing = true;
         InvokeRepeating("DecreaseValue", 0.7f, 0.7f);
+        queue = tempQueue;
+    }
+    private void StopWindowMiniGame()
+    {
+        IsBusy = false;
+        progressBar.SetActive(false);
+        promtText.gameObject.SetActive(false);
+        IsMashing = false;
+        CancelInvoke();
+        slider.value = 40;
     }
 
     private void DecreaseValue()
@@ -60,14 +72,37 @@ public class ConductorController : MonoBehaviour
             IsBusy = true;
             canCheckTicket = false;
             promtText.gameObject.SetActive(false);
+            if (transform.position.x < -6 && queue == null)
+            {
+                queue = GameObject.Find("Queue1").GetComponent<Queue>();
+            }
+            else if (transform.position.x > 6 && queue == null)
+            {
+                queue = GameObject.Find("Queue2").GetComponent<Queue>();
+            }
         }
         if (IsMashing)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                slider.value += 3;
+                slider.value += 5;
+            }
+            if (slider.value == slider.maxValue)
+            {
+                StopWindowMiniGame();
+                queue.RemovePassengerInWindow();
             }
         }
+    }
+
+    public void AcceptPassenger()
+    {
+        Debug.Log("Accept");
+    }
+
+    public void RejectPassaenger()
+    {
+        Debug.Log("Reject");
     }
 
     public void HideTicketUI()

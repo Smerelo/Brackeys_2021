@@ -84,10 +84,20 @@ public class Passenger : MonoBehaviour
         LeanTween.cancel(tweenId);
 
     }
+    private void ArrivedToFinalDest()
+    {
+        LeanTween.cancel(tweenId);
+        Destroy(gameObject);
+    }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    internal void GoOffScreen(Vector3 position)
+    {
+        tweenId = LeanTween.move(gameObject, position, 2f).setOnComplete(ArrivedToFinalDest).id;
     }
 }

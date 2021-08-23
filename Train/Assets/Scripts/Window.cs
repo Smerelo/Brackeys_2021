@@ -20,7 +20,7 @@ public class Window : MonoBehaviour
     {
         if (collision.name == "Conductor" && queue.windowIsOccupied)
         {
-            conductor.StartWindowMiniGame(transform.position);
+            conductor.StartWindowMiniGame(transform.position, queue);
         }
     }
 }
