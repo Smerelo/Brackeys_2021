@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
 public class ConductorController : MonoBehaviour
 {
+    public TextMeshProUGUI promtText;
     public float moveSpeed;
-    private bool canCheckTicket { get; set; }
+    public GameObject mask;
+    public bool canCheckTicket { get; set; }
+    public bool IsInsideDoor { get; set; }
+    private bool IsBusy { get; set; }
+
     void Start()
     {
         
@@ -14,7 +20,10 @@ public class ConductorController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move();
+        if (!IsBusy)
+        {
+            Move();
+        }
     }
 
     private void Move()
@@ -25,11 +34,24 @@ public class ConductorController : MonoBehaviour
 
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Space) && canCheckTicket) 
+        {
+            mask.SetActive(true);
+            IsBusy = true;
+            canCheckTicket = false;
+            promtText.gameObject.SetActive(false);
+        }
     }
 
     internal void EnableDoorInteraction()
     {
         canCheckTicket = true;
+        promtText.gameObject.SetActive(true);
+    }
+
+    internal void DisableDoorInteraction()
+    {
+        canCheckTicket = false;
+        promtText.gameObject.SetActive(false); 
     }
 }

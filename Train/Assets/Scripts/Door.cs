@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Door : MonoBehaviour
 {
     public Queue queue;
@@ -20,10 +20,19 @@ public class Door : MonoBehaviour
     {
         if (collision.name == "Conductor")
         {
+            conductor.IsInsideDoor = true;
             if (queue.CheckIfAvailable())
             {
                 conductor.EnableDoorInteraction();
             }
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.name == "Conductor")
+        {
+            conductor.IsInsideDoor = false;
+            conductor.DisableDoorInteraction();
         }
     }
 }

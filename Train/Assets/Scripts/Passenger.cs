@@ -13,10 +13,12 @@ public class Passenger : MonoBehaviour
     public Vector3 watingPos; 
     public int positionInLine;
     private int tweenId;
+    private ConductorController player;
 
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.Find("Conductor").GetComponent<ConductorController>();
         if (positionInLine< 5)
         {
             Debug.Log(queuePos);
@@ -40,6 +42,10 @@ public class Passenger : MonoBehaviour
     {
         MovementFinished = true;
         LeanTween.cancel(tweenId);
+        if (player.IsInsideDoor && !player.canCheckTicket)
+        {
+            player.EnableDoorInteraction();
+        }
     }
     // Update is called once per frame
     void Update()
