@@ -100,4 +100,14 @@ public class Passenger : MonoBehaviour
     {
         tweenId = LeanTween.move(gameObject, position, 2f).setOnComplete(ArrivedToFinalDest).id;
     }
+
+    internal void MoveInsideTheTrain(Vector3 position)
+    {
+        tweenId = LeanTween.move(gameObject, position, 2f).setOnComplete(FindSeat).id;
+    }
+
+    private void FindSeat()
+    {
+        LeanTween.cancel(tweenId);
+    }
 }

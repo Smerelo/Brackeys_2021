@@ -10,6 +10,7 @@ public class Queue : MonoBehaviour
     public GameObject passengerPrefab;
     public GameObject window;
     public GameObject awayPoint;
+    public GameObject insidePoint;
     public float restlessTimerEnd;
 
     private List<Passenger> passengers;
@@ -18,13 +19,15 @@ public class Queue : MonoBehaviour
     private float spawnTime = 0.2f;
     private float restlessTimer = 0;
     private float checkTimer;
-    private float maxCheckTimer = 10;
+    private float maxCheckTimer = 5;
+    private Train train;
     private bool passengersAreRestless { get; set; }
     public bool windowIsOccupied { get;  set; }
 
     void Start()
     {
-        passengers = new List<Passenger>();      
+        passengers = new List<Passenger>();
+        train = GameObject.Find("Train").GetComponent<Train>();
     }
 
     internal bool CheckIfAvailable()
@@ -59,13 +62,15 @@ public class Queue : MonoBehaviour
    private void RestlessPassengersLogic()
     {
         restlessTimer += Time.deltaTime;
+        checkTimer += Time.deltaTime;
         if (restlessTimer >= restlessTimerEnd && !windowIsOccupied)
         {
+            Debug.Log("restless");
             passengersAreRestless = true;
-            checkTimer += Time.deltaTime;
         }
         if (checkTimer >= maxCheckTimer && !windowIsOccupied)
         {
+            Debug.Log("here");
             int i = passengersAreRestless ? UnityEngine.Random.Range(0, 2) : UnityEngine.Random.Range(0, 5);
             if (passengersAreRestless && i == 1)
             {
@@ -91,6 +96,27 @@ public class Queue : MonoBehaviour
         passengers.Remove(passengerInWindow);
         MovePassengers(r);
         restlessTimer = 0;
+    }
+
+    internal void RejectPassenger()
+    {
+        Passenger tempPassenger = passengers[0];
+        passengers.Remove(tempPassenger);
+        tempPassenger.GoOffScreen(awayPoint.transform.position);
+        MovePassengers(0);
+        restlessTimer = 0;
+        passengersAreRestless = false;
+    }
+
+    internal void AcceptPassenger()
+    {
+        Passenger tempPassenger = passengers[0];
+        train.AddPassenger(passengers[0], 1);
+        passengers.Remove(tempPassenger);
+        tempPassenger.MoveInsideTheTrain(insidePoint.transform.position);
+        MovePassengers(0);
+        restlessTimer = 0;
+        passengersAreRestless = false;
     }
 
     internal void RemovePassengerInWindow()

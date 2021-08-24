@@ -72,11 +72,11 @@ public class ConductorController : MonoBehaviour
             IsBusy = true;
             canCheckTicket = false;
             promtText.gameObject.SetActive(false);
-            if (transform.position.x < -6 && queue == null)
+            if (transform.position.x < -6)
             {
                 queue = GameObject.Find("Queue1").GetComponent<Queue>();
             }
-            else if (transform.position.x > 6 && queue == null)
+            else if (transform.position.x > 6)
             {
                 queue = GameObject.Find("Queue2").GetComponent<Queue>();
             }
@@ -97,12 +97,12 @@ public class ConductorController : MonoBehaviour
 
     public void AcceptPassenger()
     {
-        Debug.Log("Accept");
+        queue.AcceptPassenger();
     }
 
     public void RejectPassaenger()
     {
-        Debug.Log("Reject");
+        queue.RejectPassenger();
     }
 
     public void HideTicketUI()
