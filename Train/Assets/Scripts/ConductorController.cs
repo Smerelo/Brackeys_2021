@@ -104,6 +104,7 @@ public class ConductorController : MonoBehaviour
     public void AcceptPassenger()
     {
         queue.AcceptPassenger();
+        AudioManager.AudioInstance.Play("Stamp");
     }
 
     public void RejectPassaenger()
@@ -132,5 +133,16 @@ public class ConductorController : MonoBehaviour
     {
         canCheckTicket = false;
         promtText.gameObject.SetActive(false); 
+    }
+
+    internal void StopAction()
+    {
+        if (IsMashing)
+        {
+            IsMashing = false;
+            IsBusy = false;
+            promtText.gameObject.SetActive(false);
+            progressBar.SetActive(false);
+        }
     }
 }

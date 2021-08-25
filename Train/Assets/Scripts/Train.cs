@@ -53,4 +53,9 @@ public class Train : MonoBehaviour
         }
         return pos;
     }
+
+    internal void AddIllegalPassenger(Passenger passenger)
+    {
+        illegalPassengers.Add(passenger);
+    }
 }

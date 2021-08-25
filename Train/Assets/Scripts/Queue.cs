@@ -14,6 +14,7 @@ public class Queue : MonoBehaviour
     public float restlessTimerEnd;
 
     private List<Passenger> passengers;
+    private ConductorController player;
     private Passenger passengerInWindow;
     private float spawnTimer;
     private float spawnTime = 0.2f;
@@ -26,6 +27,7 @@ public class Queue : MonoBehaviour
 
     void Start()
     {
+        player = GameObject.Find("Conductor").GetComponent<ConductorController>();
         passengers = new List<Passenger>();
         train = GameObject.Find("Train").GetComponent<Train>();
     }
@@ -65,7 +67,7 @@ public class Queue : MonoBehaviour
         checkTimer += Time.deltaTime;
         if (restlessTimer >= restlessTimerEnd && !windowIsOccupied)
         {
-            Debug.Log("restless");
+            AudioManager.AudioInstance.Play("AngryCrowd");
             passengersAreRestless = true;
         }
         if (checkTimer >= maxCheckTimer && !windowIsOccupied)
@@ -116,6 +118,15 @@ public class Queue : MonoBehaviour
         MovePassengers(0);
         restlessTimer = 0;
         passengersAreRestless = false;
+    }
+
+    public void PassengerInWindowGotIn()
+    {
+        train.AddIllegalPassenger(passengerInWindow);
+        passengerInWindow = null;
+        windowIsOccupied = false;
+        checkTimer = 0;
+        player.StopAction();
     }
 
     internal void RemovePassengerInWindow()
