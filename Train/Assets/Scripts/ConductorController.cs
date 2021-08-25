@@ -68,18 +68,24 @@ public class ConductorController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && canCheckTicket) 
         {
+            float i = 0;
             mask.SetActive(true);
             IsBusy = true;
             canCheckTicket = false;
             promtText.gameObject.SetActive(false);
-            if (transform.position.x < -6)
+            if (transform.position.x < -1)
             {
                 queue = GameObject.Find("Queue1").GetComponent<Queue>();
+                 i = 1.35f;
             }
-            else if (transform.position.x > 6)
+            else if (transform.position.x > 1)
             {
                 queue = GameObject.Find("Queue2").GetComponent<Queue>();
+                 i = -1.3f;
+
             }
+            Vector3 t = queue.transform.position;
+            transform.position = new Vector3(t.x + i, transform.position.y, transform.position.z);
         }
         if (IsMashing)
         {
@@ -115,8 +121,11 @@ public class ConductorController : MonoBehaviour
 
     internal void EnableDoorInteraction()
     {
-        canCheckTicket = true;
-        promtText.gameObject.SetActive(true);
+        if (!IsBusy)
+        {
+            canCheckTicket = true;
+            promtText.gameObject.SetActive(true);
+        }
     }
 
     internal void DisableDoorInteraction()

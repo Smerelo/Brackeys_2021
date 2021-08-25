@@ -70,7 +70,6 @@ public class Queue : MonoBehaviour
         }
         if (checkTimer >= maxCheckTimer && !windowIsOccupied)
         {
-            Debug.Log("here");
             int i = passengersAreRestless ? UnityEngine.Random.Range(0, 2) : UnityEngine.Random.Range(0, 5);
             if (passengersAreRestless && i == 1)
             {
