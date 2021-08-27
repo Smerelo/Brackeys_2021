@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Sit : MonoBehaviour
 {
-    public int UsedSeats { get; set; }
+    public int UsedSeats;
     private List<Passenger>  passengers {get; set;}
     void Start()
     {

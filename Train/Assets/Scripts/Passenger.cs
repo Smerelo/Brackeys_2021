@@ -26,9 +26,22 @@ public class Passenger : MonoBehaviour
     private float windowTimer = 0;
     private float maxTimer = 15;
     private Queue queue;
-   
+    private GameObject arrow;
+
+    void Update()
+    {
+        if (IsTryingToGetIn)
+        {
+            windowTimer += Time.deltaTime;
+            if (windowTimer >= maxTimer)
+            {
+                GetIn();
+            }
+        }
+    }
     void Start()
     {
+        arrow = transform.GetChild(0).gameObject;
         queue = transform.root.gameObject.GetComponent<Queue>();
         train = GameObject.Find("Train").GetComponent<Train>();
         player = GameObject.Find("Conductor").GetComponent<ConductorController>();
@@ -109,17 +122,7 @@ public class Passenger : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (IsTryingToGetIn)
-        {
-            windowTimer += Time.deltaTime;
-            if (windowTimer >= maxTimer)
-            {
-                GetIn();
-            }
-        }
-    }
+    
         
 
     private void GetIn()
@@ -147,6 +150,7 @@ public class Passenger : MonoBehaviour
 
     private void FindSeat()
     {
+        gameObject.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("Char");
         AudioManager.AudioInstance.Play("Sigh");
         LeanTween.cancel(tweenId);
         Vector3 sitPos = train.GetSeat(transform.position, this);

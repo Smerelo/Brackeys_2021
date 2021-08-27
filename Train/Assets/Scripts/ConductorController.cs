@@ -14,11 +14,16 @@ public class ConductorController : MonoBehaviour
     public bool IsInsideDoor { get; set; }
     private bool IsBusy { get; set; }
     public bool IsMashing { get; private set; }
-    private Queue queue;
+    public bool IsMoving { get; private set; }
 
+    private Queue queue;
+    private Animator animator;
     private Slider slider;
+    private SpriteRenderer SR;
     void Start()
     {
+        SR = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         slider = progressBar.GetComponent<Slider>();
     }
 
@@ -32,10 +37,11 @@ public class ConductorController : MonoBehaviour
 
     internal void StartWindowMiniGame(Vector3 position, Queue tempQueue)
     {
+
         IsBusy = true;
         transform.position = new Vector3(position.x, transform.position.y, transform.position.z);
         progressBar.SetActive(true);
-        promtText.gameObject.SetActive(true);
+        promtText.gameObject.SetActive(true);   
         IsMashing = true;
         InvokeRepeating("DecreaseValue", 0.7f, 0.7f);
         queue = tempQueue;
@@ -60,12 +66,28 @@ public class ConductorController : MonoBehaviour
 
     private void Move()
     {
-        float horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime; ;
+        float horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
+        IsMoving = false;
+        if (horizontalMovement != 0)
+        {
+            IsMoving = true;
+
+            if ( horizontalMovement < 0)
+            {
+                SR.flipX = true;
+            }
+            else
+            {
+                SR.flipX = false;
+            }
+
+        }
         transform.position += new Vector3(horizontalMovement, 0, 0);
     }
 
     void Update()
     {
+        CheckAnimation();
         if (Input.GetKeyDown(KeyCode.Space) && canCheckTicket) 
         {
             float i = 0;
@@ -98,6 +120,23 @@ public class ConductorController : MonoBehaviour
                 StopWindowMiniGame();
                 queue.RemovePassengerInWindow();
             }
+        }
+    }
+
+    private void CheckAnimation()
+    {
+        if (IsMoving && !IsBusy && !IsMashing)
+        {
+            animator.Play("walk");
+        }
+        else if (IsMashing)
+        {
+
+            animator.Play("hit");
+        }
+        else if (!IsMoving)
+        {
+            animator.Play("Idle");
         }
     }
 

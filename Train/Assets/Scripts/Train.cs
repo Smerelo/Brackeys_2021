@@ -2,22 +2,81 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Train : MonoBehaviour
 {
     private List<Passenger> passengers;
     private List<Passenger> illegalPassengers;
     public List<Sit> seats;
+    public List<Animator> lives;
+    public Animator CapacityBar;
+    public TextMeshProUGUI ClockText;
+    public Queue queue1;
+    public Queue queue2;
+    public GameObject ui;
+
+    [HideInInspector]
+    public bool IsTutorialActive {get; set;}
+    public bool Moving { get; private set; }
+
+    private float time = 180;
+    private bool inMenu = true;
+    public float moveSpeed;
+    private Animator animator;
     void Start()
     {
+        Moving = true;
+        animator = GetComponent<Animator>();
+        time = 60;
+        AudioManager.AudioInstance.Play("Engine");
         passengers = new List<Passenger>();
         illegalPassengers = new List<Passenger>();
     }
 
-    // Update is called once per frame
+    private void FixedUpdate()
+    {
+        float horizontalMovement = moveSpeed * Time.deltaTime;
+        //transform.position += new Vector3(horizontalMovement, 0, 0);
+
+    }
+
     void Update()
     {
+        if (!inMenu)
+        {
+
+            if (time > 0)
+            {
+                time -= Time.deltaTime;
+                ClockText.text = FloatToTime();
+            }
+            else
+            {
+                CloseDoors();
+            }
+        }
+        if (Moving)
+        {
+            animator.Play("moving");
+        }
+        else
+        {
+            animator.Play("Idle");
+        }
         
+    }
+
+    private void CloseDoors()
+    {
+        queue1.StopQueue();
+        queue2.StopQueue();
+    }
+
+    private string FloatToTime()
+    {
+        TimeSpan t = TimeSpan.FromSeconds(time);
+        return t.ToString("mm':'ss");
     }
 
     internal void AddPassenger(Passenger tempPassenger, int v)
@@ -30,6 +89,11 @@ public class Train : MonoBehaviour
         {
             illegalPassengers.Add(tempPassenger);
         }
+        int c = passengers.Count + illegalPassengers.Count;
+        if (c % 5 == 0)
+        {
+            CapacityBar.Play( (c/5).ToString());
+        }
     }
 
     internal Vector3 GetSeat(Vector3 pos, Passenger passenger)
@@ -37,8 +101,6 @@ public class Train : MonoBehaviour
 
         foreach (Sit seat in seats)
         {
-            Debug.Log(seat.UsedSeats);
-
             if (seat.UsedSeats == 0)
             {
                 seat.AddPassenger(passenger);

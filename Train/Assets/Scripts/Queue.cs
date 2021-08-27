@@ -22,26 +22,45 @@ public class Queue : MonoBehaviour
     private float checkTimer;
     private float maxCheckTimer = 5;
     private Train train;
+    private bool queueIsStoped;
+
     private bool passengersAreRestless { get; set; }
     public bool windowIsOccupied { get;  set; }
 
     void Start()
     {
+        queueIsStoped = true;
         player = GameObject.Find("Conductor").GetComponent<ConductorController>();
         passengers = new List<Passenger>();
         train = GameObject.Find("Train").GetComponent<Train>();
     }
 
+    internal void StopQueue()
+    {
+        queueIsStoped = true;
+        if (windowIsOccupied)
+        {
+            RemovePassengerInWindow();
+        }
+    }
+
     internal bool CheckIfAvailable()
     {
-        return passengers[0].CheckIfReady();
+        if (passengers.Count > 0)
+        {
+            return passengers[0].CheckIfReady();
+        }
+        return false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        RestlessPassengersLogic();
-        SpwanerLogic();
+        if (!queueIsStoped)
+        {
+            RestlessPassengersLogic();
+            SpwanerLogic();
+        }
     }
 
     private void SpwanerLogic()
