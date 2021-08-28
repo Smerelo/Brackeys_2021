@@ -42,7 +42,7 @@ public class Passenger : MonoBehaviour
     void Start()
     {
         arrow = transform.GetChild(0).gameObject;
-        queue = transform.root.gameObject.GetComponent<Queue>();
+        queue = transform.parent.gameObject.GetComponent<Queue>();
         train = GameObject.Find("Train").GetComponent<Train>();
         player = GameObject.Find("Conductor").GetComponent<ConductorController>();
         r =  UnityEngine.Random.Range(minRange, maxRange);
@@ -50,14 +50,19 @@ public class Passenger : MonoBehaviour
         Vector3 v2 = new Vector3(watingPos.x + positionInLine - 5, watingPos.y - .5f + r);
         if (positionInLine< 5)
         {
-           tweenId = LeanTween.moveLocal(gameObject,v, Vector2.Distance(transform.position, v) / speed).setOnComplete(setMovementCompleted).id;
+           tweenId = LeanTween.moveLocal(gameObject,v, 2f).setOnComplete(setMovementCompleted).id;
             MovementFinished = false;
         }
         else
         {
-            tweenId = LeanTween.move(gameObject, v2, Vector2.Distance(transform.position, v2) / speed).setOnComplete(setMovementCompleted).id;
+            tweenId = LeanTween.move(gameObject, v2, 2f).setOnComplete(setMovementCompleted).id;
             MovementFinished = false;
         }
+    }
+
+    internal void Delete()
+    {
+        Destroy(gameObject, 3);
     }
 
     public void Move()
@@ -88,7 +93,7 @@ public class Passenger : MonoBehaviour
         LeanTween.cancel(tweenId);
         if (player.IsInsideDoor && !player.canCheckTicket)
         {
-            player.EnableDoorInteraction();
+            player.EnableDoorInteraction("0");
         }
     }
 
@@ -128,6 +133,10 @@ public class Passenger : MonoBehaviour
     private void GetIn()
     {
         IsTryingToGetIn = false;
+        if (queue == null)
+        {
+            queue = transform.root.gameObject.GetComponent<Queue>();
+        }
         queue.PassengerInWindowGotIn();
         Vector3 v = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
         tweenId = LeanTween.move(gameObject, v, Vector2.Distance(transform.position, v) / speed).setOnComplete(FindSeat).id;

@@ -23,7 +23,7 @@ public class Door : MonoBehaviour
             conductor.IsInsideDoor = true;
             if (queue.CheckIfAvailable())
             {
-                conductor.EnableDoorInteraction();
+                conductor.EnableDoorInteraction(gameObject.name);
             }
         }
     }

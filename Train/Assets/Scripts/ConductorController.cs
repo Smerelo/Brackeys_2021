@@ -10,18 +10,24 @@ public class ConductorController : MonoBehaviour
     public float moveSpeed;
     public GameObject progressBar;
     public GameObject mask;
+    public Ticket ticket;
     public bool canCheckTicket { get; set; }
     public bool IsInsideDoor { get; set; }
     private bool IsBusy { get; set; }
     public bool IsMashing { get; private set; }
     public bool IsMoving { get; private set; }
-
+    public bool IsInMenu { get; private set; }
     private Queue queue;
     private Animator animator;
     private Slider slider;
     private SpriteRenderer SR;
+    private string doorNb;
+    private int fakeCount;
+    
+
     void Start()
     {
+        IsInMenu = true;
         SR = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         slider = progressBar.GetComponent<Slider>();
@@ -29,10 +35,14 @@ public class ConductorController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!IsBusy)
+        if (!IsBusy && !IsInMenu)
         {
             Move();
         }
+    }
+    internal void RemoveConstraints()
+    {
+        IsInMenu = false;
     }
 
     internal void StartWindowMiniGame(Vector3 position, Queue tempQueue)
@@ -95,12 +105,13 @@ public class ConductorController : MonoBehaviour
             IsBusy = true;
             canCheckTicket = false;
             promtText.gameObject.SetActive(false);
-            if (transform.position.x < -1)
+            ticket.RandomizeTicket();
+            if (doorNb == "1")
             {
                 queue = GameObject.Find("Queue1").GetComponent<Queue>();
                  i = 1.35f;
             }
-            else if (transform.position.x > 1)
+            else if (doorNb == "2")
             {
                 queue = GameObject.Find("Queue2").GetComponent<Queue>();
                  i = -1.3f;
@@ -140,10 +151,20 @@ public class ConductorController : MonoBehaviour
         }
     }
 
-    public void AcceptPassenger()
+    public void AcceptPassenger( bool fake)
     {
-        queue.AcceptPassenger();
-        AudioManager.AudioInstance.Play("Stamp");
+        queue.AcceptPassenger(fake);
+        if (fake)
+        {
+            fakeCount++;
+        }
+        else
+        {
+            fakeCount = 0;
+        }
+        IsBusy = false;
+        canCheckTicket = true;
+        promtText.gameObject.SetActive(true);
     }
 
     public void RejectPassaenger()
@@ -154,13 +175,15 @@ public class ConductorController : MonoBehaviour
     public void HideTicketUI()
     {
         mask.SetActive(false);
-        IsBusy = false;
-        canCheckTicket = true;
-        promtText.gameObject.SetActive(true);
+        
     }
 
-    internal void EnableDoorInteraction()
+    internal void EnableDoorInteraction(string door)
     {
+        if (door != "0")
+        {
+            doorNb = door;
+        }
         if (!IsBusy)
         {
             canCheckTicket = true;

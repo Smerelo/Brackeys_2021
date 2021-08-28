@@ -10,6 +10,8 @@ public class Train : MonoBehaviour
     private List<Passenger> illegalPassengers;
     public List<Sit> seats;
     public List<Animator> lives;
+    public Animator doorsAnimator;
+    public Animator doorsAnimator2;
     public Animator CapacityBar;
     public TextMeshProUGUI ClockText;
     public Queue queue1;
@@ -19,13 +21,22 @@ public class Train : MonoBehaviour
     [HideInInspector]
     public bool IsTutorialActive {get; set;}
     public bool Moving { get; private set; }
+    public bool IsMoving { get; private set; }
 
-    private float time = 180;
+    private float time;
     private bool inMenu = true;
     public float moveSpeed;
+    private float startMoveSpeed;
     private Animator animator;
+    private CameraManager cameraManager;
+    private string currentState;
+    private bool doorsClosed;
+    private BackgroundManager bgManager;
     void Start()
     {
+        bgManager = GameObject.Find("BackGroundManager").GetComponent<BackgroundManager>();
+        cameraManager = GameObject.Find("CameraManager").GetComponent<CameraManager>();
+        startMoveSpeed = moveSpeed;
         Moving = true;
         animator = GetComponent<Animator>();
         time = 60;
@@ -37,40 +48,118 @@ public class Train : MonoBehaviour
     private void FixedUpdate()
     {
         float horizontalMovement = moveSpeed * Time.deltaTime;
-        //transform.position += new Vector3(horizontalMovement, 0, 0);
+        transform.position += new Vector3(horizontalMovement, 0, 0);
 
     }
 
     void Update()
     {
-        if (!inMenu)
+        if (!inMenu && !IsMoving)
         {
-
             if (time > 0)
             {
                 time -= Time.deltaTime;
                 ClockText.text = FloatToTime();
             }
-            else
+            else if (!doorsClosed)
             {
+                doorsClosed = true;
                 CloseDoors();
             }
         }
-        if (Moving)
+        if (IsMoving)
         {
-            animator.Play("moving");
+            if (time > 0)
+            {
+                time -= Time.deltaTime;
+                ClockText.text = FloatToTime();
+            }
+        }
+    }
+
+
+ 
+
+    IEnumerator LerpFunction(float endValue, float duration)
+    {
+        float time = 0;
+        float startValue = moveSpeed;
+
+        while (time < duration)
+        {
+            moveSpeed = Mathf.Lerp(startValue, endValue, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        ChangeZoom();
+        moveSpeed = endValue;
+    }
+
+    private void ChangeZoom()
+    {
+        
+        if (moveSpeed < 1)
+        {
+            ChangeAnimationState("open", doorsAnimator);
+            StartCoroutine(PlayNextAnimation(doorsAnimator, "StayOpen"));
+            ChangeAnimationState("open", doorsAnimator2);
+            StartCoroutine(PlayNextAnimation(doorsAnimator2, "StayOpen"));
+            cameraManager.ZoomOut();
+            Invoke("StartGame", 5f);
+            AudioManager.AudioInstance.Play("DoorClose");
         }
         else
         {
-            animator.Play("Idle");
+            cameraManager.SwitchToZoom();
+            bgManager.StopAddingPlatforms();
+            AudioManager.AudioInstance.Play("Engine");
+            AudioManager.AudioInstance.Play("Theme");
+            AudioManager.AudioInstance.Stop("MainTheme");
+            time = 60;
+            IsMoving = true;
         }
-        
+
+       
+    }
+
+    private void StayOpen()
+    {
+        ChangeAnimationState("stayOpen", doorsAnimator);
+        ChangeAnimationState("stayOpen", doorsAnimator2);
+    }
+     private void StayClosed()
+    {
+        ChangeAnimationState("stayClosed", doorsAnimator);
+        ChangeAnimationState("stayClosed", doorsAnimator2);
+    }
+
+    private void StartGame()
+    {
+        time = 180;
+        inMenu = false;
+        doorsClosed = false;
+        queue1.StartQueue();
+        queue2.StartQueue();
+        AudioManager.AudioInstance.Stop("Theme");
+        AudioManager.AudioInstance.Play("MainTheme");
+    }
+
+    internal void Break()
+    {
+        StartCoroutine(LerpFunction(0, 10));
+        AudioManager.AudioInstance.Stop("Engine");
+        AudioManager.AudioInstance.Play("Braking");
     }
 
     private void CloseDoors()
     {
         queue1.StopQueue();
         queue2.StopQueue();
+        ChangeAnimationState("close", doorsAnimator);
+        StartCoroutine(PlayNextAnimation(doorsAnimator, "StayClosed"));
+        ChangeAnimationState("close", doorsAnimator2);
+        StartCoroutine(PlayNextAnimation(doorsAnimator2, "StayClosed"));
+        StartCoroutine(LerpFunction(20, 10));
     }
 
     private string FloatToTime()
@@ -89,6 +178,7 @@ public class Train : MonoBehaviour
         {
             illegalPassengers.Add(tempPassenger);
         }
+        Debug.Log($"illegal: {illegalPassengers.Count} legal: {passengers.Count}");
         int c = passengers.Count + illegalPassengers.Count;
         if (c % 5 == 0)
         {
@@ -120,4 +210,17 @@ public class Train : MonoBehaviour
     {
         illegalPassengers.Add(passenger);
     }
+
+    IEnumerator PlayNextAnimation(Animator anim, string method)
+    {
+        yield return new WaitForEndOfFrame();
+        Invoke(method, anim.GetCurrentAnimatorStateInfo(0).length);
+    }
+
+    private void ChangeAnimationState(string newState, Animator currentAnimator)
+    {
+      
+        currentAnimator.Play(newState);
+    }
+
 }

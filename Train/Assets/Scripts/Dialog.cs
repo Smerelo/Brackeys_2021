@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
 public class Dialog : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class Dialog : MonoBehaviour
     public float typingSpeed;
     private int index;
     public GameObject continueButton;
+    public UnityEvent method;
+
+    public bool IsTyping { get; private set; }
+
     private void Start()
     {
         StartCoroutine(Type());
@@ -16,9 +21,14 @@ public class Dialog : MonoBehaviour
 
     private void Update()
     {
+     
         if (text.text == sentences[index])
         {
             continueButton.SetActive(true);
+        }
+        if (IsTyping)
+        {
+            continueButton.SetActive(false);
         }
     }
 
@@ -26,9 +36,11 @@ public class Dialog : MonoBehaviour
     {
         foreach (char letter in sentences[index].ToCharArray())
         {
+            IsTyping = true;
             text.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
+        IsTyping = false;
     }
 
     public void NextSentence()
@@ -43,6 +55,7 @@ public class Dialog : MonoBehaviour
         else
         {
             text.text = "";
+            method.Invoke();
         }
     }
 }

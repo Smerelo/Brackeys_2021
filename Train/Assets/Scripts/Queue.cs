@@ -42,6 +42,20 @@ public class Queue : MonoBehaviour
         {
             RemovePassengerInWindow();
         }
+        RemovePassengers();
+    }
+
+    private void RemovePassengers()
+    {
+        foreach (Passenger p in passengers)
+        {
+            if (p != null)
+            {
+                p.gameObject.transform.parent = null;
+                p.Delete();
+            }
+        }
+        passengers.Clear();
     }
 
     internal bool CheckIfAvailable()
@@ -80,7 +94,12 @@ public class Queue : MonoBehaviour
         }
     }
 
-   private void RestlessPassengersLogic()
+    internal void StartQueue()
+    {
+        queueIsStoped = false;
+    }
+
+    private void RestlessPassengersLogic()
     {
         restlessTimer += Time.deltaTime;
         checkTimer += Time.deltaTime;
@@ -128,10 +147,13 @@ public class Queue : MonoBehaviour
         passengersAreRestless = false;
     }
 
-    internal void AcceptPassenger()
+    internal void AcceptPassenger(bool fake)
     {
         Passenger tempPassenger = passengers[0];
-        train.AddPassenger(passengers[0], 1);
+        if (fake)
+           train.AddPassenger(passengers[0], 0);
+        else
+            train.AddPassenger(passengers[0], 1);
         passengers.Remove(tempPassenger);
         tempPassenger.MoveInsideTheTrain(insidePoint.transform.position);
         MovePassengers(0);
