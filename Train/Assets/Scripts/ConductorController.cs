@@ -11,19 +11,29 @@ public class ConductorController : MonoBehaviour
     public GameObject progressBar;
     public GameObject mask;
     public Ticket ticket;
+    public GameObject letter;
+    public SpriteRenderer specialObject;
+    public TextMeshProUGUI letterText   ;
+
     public bool canCheckTicket { get; set; }
     public bool IsInsideDoor { get; set; }
     private bool IsBusy { get; set; }
     public bool IsMashing { get; private set; }
     public bool IsMoving { get; private set; }
     public bool IsInMenu { get; private set; }
+    public bool CanCheckSeats { get; internal set; }
+
     private Queue queue;
     private Animator animator;
     private Slider slider;
     private SpriteRenderer SR;
     private string doorNb;
     private int fakeCount;
-    
+    private Sit currentSeatChecked;
+    private int ticketCount;
+    private UniqueStory story;
+    private int workerPoints;
+    private int compasionatePoints;
 
     void Start()
     {
@@ -31,6 +41,19 @@ public class ConductorController : MonoBehaviour
         SR = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         slider = progressBar.GetComponent<Slider>();
+    }
+
+    internal void EnableSeatCheck(Sit seat)
+    {
+        CanCheckSeats = true;
+        promtText.gameObject.SetActive(true);
+        currentSeatChecked = seat;
+    }
+
+    internal void DisableSeatCheck()
+    {
+        CanCheckSeats = false;
+        promtText.gameObject.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -47,7 +70,6 @@ public class ConductorController : MonoBehaviour
 
     internal void StartWindowMiniGame(Vector3 position, Queue tempQueue)
     {
-
         IsBusy = true;
         transform.position = new Vector3(position.x, transform.position.y, transform.position.z);
         progressBar.SetActive(true);
@@ -74,12 +96,20 @@ public class ConductorController : MonoBehaviour
         }
     }
 
+    internal void ResetTicketCounter()
+    {
+        ticketCount = 0;
+    }
+
     private void Move()
     {
         float horizontalMovement = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
-        IsMoving = false;
         if (horizontalMovement != 0)
         {
+            if (IsMoving == false)
+            {
+                AudioManager.AudioInstance.Play("FootSteps");
+            }
             IsMoving = true;
 
             if ( horizontalMovement < 0)
@@ -92,20 +122,35 @@ public class ConductorController : MonoBehaviour
             }
 
         }
+        else
+        {
+            IsMoving = false;
+            AudioManager.AudioInstance.Stop("FootSteps");
+
+        }
         transform.position += new Vector3(horizontalMovement, 0, 0);
+    }
+
+    internal int GetScore2()
+    {
+        return compasionatePoints;
+    }
+
+    internal int GetScore()
+    {
+        return workerPoints;
     }
 
     void Update()
     {
         CheckAnimation();
+        if (CanCheckSeats && Input.GetKeyDown(KeyCode.Space))
+        {
+            currentSeatChecked.ExpelPassengers();
+        }
         if (Input.GetKeyDown(KeyCode.Space) && canCheckTicket) 
         {
             float i = 0;
-            mask.SetActive(true);
-            IsBusy = true;
-            canCheckTicket = false;
-            promtText.gameObject.SetActive(false);
-            ticket.RandomizeTicket();
             if (doorNb == "1")
             {
                 queue = GameObject.Find("Queue1").GetComponent<Queue>();
@@ -117,8 +162,27 @@ public class ConductorController : MonoBehaviour
                  i = -1.3f;
 
             }
-            Vector3 t = queue.transform.position;
-            transform.position = new Vector3(t.x + i, transform.position.y, transform.position.z);
+            if (queue != null)
+            {
+                promtText.gameObject.SetActive(false);
+                IsBusy = true;
+                canCheckTicket = false;
+                ticketCount++;
+                if (ticketCount == 5 || ticketCount == 10)
+                {
+                    story = ticket.UnqiueStory();
+                    queue.ShowPassengerPrompt(story);
+                }
+                else
+                {
+                    mask.SetActive(true);
+                    ticket.gameObject.SetActive(true);
+                    ticket.RandomizeTicket();
+                }
+                Vector3 t = queue.transform.position;
+                transform.position = new Vector3(t.x + i, transform.position.y, transform.position.z);
+            }
+
         }
         if (IsMashing)
         {
@@ -134,6 +198,12 @@ public class ConductorController : MonoBehaviour
         }
     }
 
+    internal void PassengerEjected()
+    {
+        CanCheckSeats = false;
+        IsBusy = false;
+    }
+
     private void CheckAnimation()
     {
         if (IsMoving && !IsBusy && !IsMashing)
@@ -142,10 +212,9 @@ public class ConductorController : MonoBehaviour
         }
         else if (IsMashing)
         {
-
             animator.Play("hit");
         }
-        else if (!IsMoving)
+        else if (!IsMoving || IsBusy && !IsMashing)
         {
             animator.Play("Idle");
         }
@@ -162,20 +231,56 @@ public class ConductorController : MonoBehaviour
         {
             fakeCount = 0;
         }
+        if (story != null)
+        {
+            workerPoints += story.Ywp;
+            compasionatePoints += story.Ycp;
+            story = null;
+            mask.SetActive(false);
+            ticket.gameObject.SetActive(true);
+            specialObject.gameObject.SetActive(false);
+            letter.SetActive(false);
+            letterText.gameObject.SetActive(false);
+        }
         IsBusy = false;
         canCheckTicket = true;
         promtText.gameObject.SetActive(true);
     }
 
+    internal void OpenSpecialUI()
+    {
+        mask.SetActive(true);
+        ticket.gameObject.SetActive(false);
+        specialObject.gameObject.SetActive(true);
+        letter.SetActive(true);
+        letterText.gameObject.SetActive(true);
+        specialObject.sprite = story.image;
+        letterText.text = story.text;
+    }
+
     public void RejectPassaenger()
     {
         queue.RejectPassenger();
+        IsBusy = false;
+        canCheckTicket = true;
+        promtText.gameObject.SetActive(true);
+        if (story != null)
+        {
+            workerPoints += story.Nwp;
+            compasionatePoints += story.Ncp;
+            story = null;
+            mask.SetActive(false);
+            ticket.gameObject.SetActive(true);
+            specialObject.gameObject.SetActive(false);
+            letter.SetActive(false);
+            letterText.gameObject.SetActive(false);
+        }
     }
 
     public void HideTicketUI()
     {
         mask.SetActive(false);
-        
+        IsBusy = false;
     }
 
     internal void EnableDoorInteraction(string door)

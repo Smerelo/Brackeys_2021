@@ -23,12 +23,15 @@ public class Menu : MonoBehaviour
     {
         foreach (GameObject b in buttons)
         {
+
             LeanTween.move(b, new Vector3(b.transform.position.x - 0.001f, b.transform.position.y, -10), 1.5f).setOnComplete(StartTutorial);
         }
     }
 
     private void StartTutorial()
     {
+        AudioManager.AudioInstance.Stop("Theme");
+        AudioManager.AudioInstance.Play("SpaceTravel");
         tutorial.Monologue();
         gameObject.SetActive(false);
     }

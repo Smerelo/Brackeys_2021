@@ -103,7 +103,7 @@ public class Queue : MonoBehaviour
     {
         restlessTimer += Time.deltaTime;
         checkTimer += Time.deltaTime;
-        if (restlessTimer >= restlessTimerEnd && !windowIsOccupied)
+        if (restlessTimer >= restlessTimerEnd && !windowIsOccupied && train.time > 10)
         {
             AudioManager.AudioInstance.Play("AngryCrowd");
             passengersAreRestless = true;
@@ -144,14 +144,23 @@ public class Queue : MonoBehaviour
         tempPassenger.GoOffScreen(awayPoint.transform.position);
         MovePassengers(0);
         restlessTimer = 0;
+        AudioManager.AudioInstance.Stop("AngryCrowd;");
         passengersAreRestless = false;
+    }
+
+    internal void ShowPassengerPrompt(UniqueStory uniqueStory)
+    {
+        passengers[0].ShowPrompt(uniqueStory.dialog);
     }
 
     internal void AcceptPassenger(bool fake)
     {
         Passenger tempPassenger = passengers[0];
         if (fake)
-           train.AddPassenger(passengers[0], 0);
+        {
+            tempPassenger.isIllegal = true;
+            train.AddPassenger(passengers[0], 0);
+        }
         else
             train.AddPassenger(passengers[0], 1);
         passengers.Remove(tempPassenger);
@@ -159,6 +168,7 @@ public class Queue : MonoBehaviour
         MovePassengers(0);
         restlessTimer = 0;
         passengersAreRestless = false;
+        AudioManager.AudioInstance.Stop("AngryCrowd;");
     }
 
     public void PassengerInWindowGotIn()
@@ -172,10 +182,13 @@ public class Queue : MonoBehaviour
 
     internal void RemovePassengerInWindow()
     {
-        passengerInWindow.GoOffScreen(awayPoint.transform.position);
-        passengerInWindow = null;
-        windowIsOccupied = false;
-        checkTimer = 0;
+        if (passengerInWindow != null)
+        {
+            passengerInWindow.GoOffScreen(awayPoint.transform.position);
+            passengerInWindow = null;
+            windowIsOccupied = false;
+            checkTimer = 0;
+        }
     }
 
     private void MovePassengers(int i)

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 public class Ticket : MonoBehaviour
 {
     private Animator animator;
@@ -11,6 +12,11 @@ public class Ticket : MonoBehaviour
     private ConductorController conductor;
     private Train train;
     public GameObject stamp;
+    public UniqueStory[] uniqueStories;
+    private int counter = -1;
+
+    public bool IsUnique { get; private set; }
+
     void Start()
     {
         parent = transform.parent.gameObject;
@@ -54,7 +60,11 @@ public class Ticket : MonoBehaviour
 
     public void CheckTicket()
     {
-        AudioManager.AudioInstance.Play("Stamp");
+        if (!IsUnique)
+        {
+            AudioManager.AudioInstance.Play("Stamp");
+            stamp.SetActive(true);
+        }
         Invoke("AcceptPassenger", 0.5f);
     }
 
@@ -68,5 +78,12 @@ public class Ticket : MonoBehaviour
     void Update()
     {
         
+    }
+
+    internal UniqueStory UnqiueStory()
+    {
+        counter++;
+        IsUnique = true;
+        return uniqueStories[counter];
     }
 }

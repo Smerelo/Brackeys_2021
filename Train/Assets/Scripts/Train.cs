@@ -8,6 +8,7 @@ public class Train : MonoBehaviour
 {
     private List<Passenger> passengers;
     private List<Passenger> illegalPassengers;
+    public Transform[] ejectPos;
     public List<Sit> seats;
     public List<Animator> lives;
     public Animator doorsAnimator;
@@ -17,29 +18,33 @@ public class Train : MonoBehaviour
     public Queue queue1;
     public Queue queue2;
     public GameObject ui;
+    public GameObject engineLight;
 
     [HideInInspector]
     public bool IsTutorialActive {get; set;}
     public bool Moving { get; private set; }
     public bool IsMoving { get; private set; }
+    public bool InEndScreen { get; private set; }
 
-    private float time;
+    public EndScreen EndScreen;
+    [HideInInspector]
+    public float time;
     private bool inMenu = true;
     public float moveSpeed;
-    private float startMoveSpeed;
-    private Animator animator;
     private CameraManager cameraManager;
-    private string currentState;
     private bool doorsClosed;
+    private Animator a;
     private BackgroundManager bgManager;
+    private ConductorController player;
+    private bool isEntering;
+    private int loopCount;
+
     void Start()
     {
         bgManager = GameObject.Find("BackGroundManager").GetComponent<BackgroundManager>();
+        player = GameObject.Find("Conductor").GetComponent<ConductorController>();
         cameraManager = GameObject.Find("CameraManager").GetComponent<CameraManager>();
-        startMoveSpeed = moveSpeed;
-        Moving = true;
-        animator = GetComponent<Animator>();
-        time = 60;
+        time = 20;
         AudioManager.AudioInstance.Play("Engine");
         passengers = new List<Passenger>();
         illegalPassengers = new List<Passenger>();
@@ -47,14 +52,14 @@ public class Train : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float horizontalMovement = moveSpeed * Time.deltaTime;
-        transform.position += new Vector3(horizontalMovement, 0, 0);
-
+            float horizontalMovement = moveSpeed * Time.deltaTime;
+            transform.position += new Vector3(horizontalMovement, 0, 0);
     }
 
     void Update()
     {
-        if (!inMenu && !IsMoving)
+        Debug.Log(time);
+        if (!inMenu && !IsMoving && !InEndScreen)
         {
             if (time > 0)
             {
@@ -67,18 +72,104 @@ public class Train : MonoBehaviour
                 CloseDoors();
             }
         }
-        if (IsMoving)
+        if (IsMoving && !InEndScreen)
         {
             if (time > 0)
             {
                 time -= Time.deltaTime;
                 ClockText.text = FloatToTime();
             }
+            else if (!isEntering && !InEndScreen)
+            {
+                Debug.Log("here1");
+                isEntering = true;
+                StartEnteringFaze();
+            }
         }
     }
 
+    private void StartEnteringFaze()
+    {
+        player.ResetTicketCounter();
+        bgManager.SpawnPlatform();
+      
+    }
 
- 
+    private void RemovePassengers()
+    {
+        foreach (Passenger p in passengers)
+        {
+            if (p != null)
+            {
+                p.gameObject.transform.parent = null;
+                p.DeleteNow();
+            }
+        }
+        passengers.Clear();
+        foreach (Passenger p in illegalPassengers)
+        {
+            if (p != null)
+            {
+                p.gameObject.transform.parent = null;
+                p.DeleteNow();
+            }
+        }
+        illegalPassengers.Clear();
+    }
+
+    private void EndGame()
+    {
+        InEndScreen = true;
+        cameraManager.ZoomOut();
+        ui.SetActive(false);
+        EndScreen.gameObject.SetActive(true);
+        EndScreen.ChooseEnding(player.GetScore(), player.GetScore2());
+    }
+
+    internal Transform GetEjectPos(Vector3 position)
+    {
+        float d = 1000;
+        int t = 0;
+        for (int i = 0; i < ejectPos.Length; i++)
+        {
+            if (d > Vector2.Distance(position, ejectPos[i].localPosition))
+            {
+                t = i;
+                d = Vector2.Distance(position, ejectPos[i].localPosition);
+            }
+        }
+        a = ejectPos[t].gameObject.GetComponent<Animator>();
+        ChangeAnimationState("open",a);
+        StartCoroutine( PlayNextAnimation(a, "EjectStayOpen"));
+        return ejectPos[t];
+    }
+
+    private void EjectStayOpen()
+    {
+        a.Play("stayOpen");
+        Invoke("CloseHatch", 0.5f);
+    }
+
+    internal void RemoveIllegalPassenger(Passenger passenger)
+    {
+        illegalPassengers.Remove(passenger);
+        int c = passengers.Count + illegalPassengers.Count;
+        if (c % 5 == 0)
+        {
+            CapacityBar.Play((c / 5).ToString());
+        }
+    }
+
+    private void CloseHatch()
+    {
+        ChangeAnimationState("close", a);
+        StartCoroutine(PlayNextAnimation(a, "HatchToIdle"));
+    }
+    private void HatchToIdle()
+    {
+        player.PassengerEjected();
+        ChangeAnimationState("idle", a);
+    }
 
     IEnumerator LerpFunction(float endValue, float duration)
     {
@@ -100,6 +191,8 @@ public class Train : MonoBehaviour
         
         if (moveSpeed < 1)
         {
+            isEntering = false;
+            engineLight.SetActive(false);
             ChangeAnimationState("open", doorsAnimator);
             StartCoroutine(PlayNextAnimation(doorsAnimator, "StayOpen"));
             ChangeAnimationState("open", doorsAnimator2);
@@ -107,15 +200,26 @@ public class Train : MonoBehaviour
             cameraManager.ZoomOut();
             Invoke("StartGame", 5f);
             AudioManager.AudioInstance.Play("DoorClose");
+            IsMoving = false;
         }
         else
         {
+            loopCount++;
+            if (loopCount == 4)
+            {
+                Invoke("EndGame", 1);
+            }
+            engineLight.SetActive(true);
             cameraManager.SwitchToZoom();
-            bgManager.StopAddingPlatforms();
+            foreach (Passenger p in illegalPassengers)
+            {
+                p.ShowArrow();
+            }
+            AudioManager.AudioInstance.Stop("AngryCrowd");
             AudioManager.AudioInstance.Play("Engine");
             AudioManager.AudioInstance.Play("Theme");
             AudioManager.AudioInstance.Stop("MainTheme");
-            time = 60;
+            time = 30;
             IsMoving = true;
         }
 
@@ -140,13 +244,14 @@ public class Train : MonoBehaviour
         doorsClosed = false;
         queue1.StartQueue();
         queue2.StartQueue();
-        AudioManager.AudioInstance.Stop("Theme");
-        AudioManager.AudioInstance.Play("MainTheme");
     }
 
     internal void Break()
     {
-        StartCoroutine(LerpFunction(0, 10));
+        Debug.Log("here3");
+        StartCoroutine(LerpFunction(0, 12));
+        AudioManager.AudioInstance.Stop("SpaceTravel");
+        AudioManager.AudioInstance.Play("MainTheme");
         AudioManager.AudioInstance.Stop("Engine");
         AudioManager.AudioInstance.Play("Braking");
     }
@@ -155,11 +260,15 @@ public class Train : MonoBehaviour
     {
         queue1.StopQueue();
         queue2.StopQueue();
+        bgManager.Tunnel = true;
+        bgManager.StopAddingPlatforms();
         ChangeAnimationState("close", doorsAnimator);
         StartCoroutine(PlayNextAnimation(doorsAnimator, "StayClosed"));
         ChangeAnimationState("close", doorsAnimator2);
         StartCoroutine(PlayNextAnimation(doorsAnimator2, "StayClosed"));
-        StartCoroutine(LerpFunction(20, 10));
+        StartCoroutine(LerpFunction(20, 8));
+        AudioManager.AudioInstance.Play("EngineStart");
+        player.HideTicketUI();
     }
 
     private string FloatToTime()
@@ -178,7 +287,6 @@ public class Train : MonoBehaviour
         {
             illegalPassengers.Add(tempPassenger);
         }
-        Debug.Log($"illegal: {illegalPassengers.Count} legal: {passengers.Count}");
         int c = passengers.Count + illegalPassengers.Count;
         if (c % 5 == 0)
         {

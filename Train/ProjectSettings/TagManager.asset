@@ -41,6 +41,9 @@ TagManager:
   - name: Back
     uniqueID: 32483391
     locked: 0
+  - name: Blackhole
+    uniqueID: 2227741079
+    locked: 0
   - name: Background
     uniqueID: 170074245
     locked: 0
@@ -53,8 +56,14 @@ TagManager:
   - name: Char
     uniqueID: 3985978371
     locked: 0
+  - name: TrainForeGround
+    uniqueID: 3972916033
+    locked: 0
   - name: UI
     uniqueID: 710245709
+    locked: 0
+  - name: Arrow
+    uniqueID: 1212187741
     locked: 0
   - name: Default
     uniqueID: 0

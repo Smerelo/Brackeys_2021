@@ -1,0 +1,420 @@
+fileFormatVersion: 2
+guid: 9d55ca37e17b57340a41c661266049e0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5915065740306950041
+    second: speech bubble-passengerconductor_0
+  - first:
+      213: 2867946055622126546
+    second: speech bubble-passengerconductor_1
+  - first:
+      213: 312851419039049228
+    second: speech bubble-passengerconductor_2
+  - first:
+      213: -5941085119076484102
+    second: speech bubble-passengerconductor_3
+  - first:
+      213: -4545738559000847891
+    second: speech bubble-passengerconductor_4
+  - first:
+      213: 4344612874348849139
+    second: speech bubble-passengerconductor_5
+  - first:
+      213: 4397902705458684890
+    second: speech bubble-passengerconductor_6
+  - first:
+      213: -3943087110865277475
+    second: speech bubble-passengerconductor_7
+  - first:
+      213: -7898998024939402180
+    second: speech bubble-passengerconductor_8
+  - first:
+      213: 4072475961684531933
+    second: speech bubble-passengerconductor_9
+  - first:
+      213: 4529756018648542492
+    second: speech bubble-passengerconductor_10
+  - first:
+      213: 7944928416892599528
+    second: speech bubble-passengerconductor_11
+  - first:
+      213: 5665030291287443764
+    second: speech bubble-passengerconductor_12
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3840
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 997241293f8861250800000000000000
+      internalID: 5915065740306950041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3520
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dbe6581ebdfcc720800000000000000
+      internalID: 2867946055622126546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3200
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c06ac4345b8775400800000000000000
+      internalID: 312851419039049228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2880
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afb3619bf860d8da0800000000000000
+      internalID: -5941085119076484102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2560
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de955fc6dda4ae0c0800000000000000
+      internalID: -4545738559000847891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2240
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f7e626f36a2b4c30800000000000000
+      internalID: 4344612874348849139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1920
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad32893a53d780d30800000000000000
+      internalID: 4397902705458684890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1600
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddd247ef9275749c0800000000000000
+      internalID: -3943087110865277475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1280
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3c89f1a52f116290800000000000000
+      internalID: -7898998024939402180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 960
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dda168c6f47548830800000000000000
+      internalID: 4072475961684531933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1debba691decde30800000000000000
+      internalID: 4529756018648542492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ec3ac61d4e024e60800000000000000
+      internalID: 7944928416892599528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: speech bubble-passengerconductor_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 896
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 439040a090b3e9e40800000000000000
+      internalID: 5665030291287443764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class Passenger : MonoBehaviour
 {
     [HideInInspector]
     public Vector3 queuePos{ get; set; }
-    public bool MovementFinished { get; private set; }
+    public bool MovementFinished;
     public bool HasToMoveToWindow { get; private set; }
     public GameObject windowTemp { get; private set; }
     public bool IsSeated { get; private set; }
@@ -24,9 +24,14 @@ public class Passenger : MonoBehaviour
     private Train train;
     private float speed = 5;
     private float windowTimer = 0;
-    private float maxTimer = 15;
+    private float maxTimer = 12;
     private Queue queue;
     private GameObject arrow;
+    public bool isIllegal = false;
+    private GameObject prompt;
+    private Animator pAnimator;
+    private TextMeshProUGUI text;
+    private string promptText;
 
     void Update()
     {
@@ -36,12 +41,16 @@ public class Passenger : MonoBehaviour
             if (windowTimer >= maxTimer)
             {
                 GetIn();
+                isIllegal = true;
             }
         }
     }
     void Start()
     {
         arrow = transform.GetChild(0).gameObject;
+        prompt = transform.GetChild(2).gameObject;
+        text = transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>();
+        pAnimator = prompt.GetComponent<Animator>();
         queue = transform.parent.gameObject.GetComponent<Queue>();
         train = GameObject.Find("Train").GetComponent<Train>();
         player = GameObject.Find("Conductor").GetComponent<ConductorController>();
@@ -60,9 +69,30 @@ public class Passenger : MonoBehaviour
         }
     }
 
+    internal void Expel()
+    {
+        if (arrow.activeSelf)
+        {
+            tweenId = LeanTween.moveLocal(gameObject, train.GetEjectPos(transform.localPosition).localPosition, 1f).setOnComplete(RemoveFromList).id;
+            Destroy(gameObject, 10);
+        }
+    }
+
+    private void RemoveFromList()
+    {
+        LeanTween.cancel(tweenId);
+        train.RemoveIllegalPassenger(this);
+        transform.parent = null;
+    }
+
     internal void Delete()
     {
-        Destroy(gameObject, 3);
+        Destroy(gameObject, 10);
+    }
+
+    internal void DeleteNow()
+    {
+        Destroy(gameObject, 0.2f);
     }
 
     public void Move()
@@ -72,19 +102,19 @@ public class Passenger : MonoBehaviour
         Vector3 v2 = new Vector3(watingPos.x + positionInLine - 5, watingPos.y - .5f + r);
         if (positionInLine < 5)
         {
-            tweenId = LeanTween.moveLocal(gameObject, v, 1.5f).setOnComplete(setMovementCompleted).id;
+            tweenId = LeanTween.moveLocal(gameObject, v, .5f).setOnComplete(setMovementCompleted).id;
             MovementFinished = false;
         }
         else
         {
-            tweenId = LeanTween.move(gameObject, v2, 1.5f).setOnComplete(setMovementCompleted).id;
+            tweenId = LeanTween.move(gameObject, v2, .5f).setOnComplete(setMovementCompleted).id;
             MovementFinished = false;
         }
     }
 
     internal bool CheckIfReady()
     {
-        return MovementFinished;
+        return  MovementFinished;
     }
 
     private void setMovementCompleted()
@@ -113,6 +143,11 @@ public class Passenger : MonoBehaviour
         }
     }
 
+    internal void ShowArrow()
+    {
+        arrow.SetActive(true);
+    }
+
     private void ArrivedToWindow()
     {
         AudioManager.AudioInstance.Play("Scrap");
@@ -120,6 +155,29 @@ public class Passenger : MonoBehaviour
         IsTryingToGetIn = true;
         MovementFinished = true;
     }
+
+    internal void ShowPrompt(string dialog)
+    {
+        text.text = dialog;
+        prompt.gameObject.SetActive(true);
+        ChangeAnimationState("grow", pAnimator);
+        StartCoroutine( PlayNextAnimation(pAnimator, "PlayOpen"));
+    }
+
+    private void PlayOpen()
+    {
+        text.gameObject.SetActive(true);
+        ChangeAnimationState("open", pAnimator);
+        Invoke("ClosePrompt", 1f);
+    }
+
+    private void ClosePrompt()
+    {
+        prompt.gameObject.SetActive(false);
+        text.gameObject.SetActive(false);
+        player.OpenSpecialUI();
+    }
+
     private void ArrivedToFinalDest()
     {
         LeanTween.cancel(tweenId);
@@ -171,5 +229,17 @@ public class Passenger : MonoBehaviour
         IsSeated = true;
         MovementFinished = true;
         LeanTween.cancel(tweenId);
+    }
+
+    IEnumerator PlayNextAnimation(Animator anim, string method)
+    {
+        yield return new WaitForEndOfFrame();
+        Invoke(method, anim.GetCurrentAnimatorStateInfo(0).length);
+    }
+
+    private void ChangeAnimationState(string newState, Animator currentAnimator)
+    {
+
+        currentAnimator.Play(newState);
     }
 }
